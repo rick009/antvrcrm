@@ -1,0 +1,4 @@
+services:
+#    antvr_workorder.example:
+#        class: Antvr\WorkorderBundle\Example
+#        arguments: [@service_id, "plain_value", %parameter%]

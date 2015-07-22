@@ -1,0 +1,54 @@
+Antvr\UserBundle\Entity\User:
+    type: entity
+    table: users
+    repositoryClass: Antvr\UserBundle\Entity\UserRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        userName:
+            type: string
+            length: 50
+            column: user_name
+            options:
+                comment: 用户名
+        name:
+            type: string
+            length: 20
+            column: name
+            options:
+                comment: 姓名
+        email:
+            type: string
+            length: 50
+            column: email
+            options:
+                comment: 邮箱
+        userPassword:
+            type: string
+            length: 60
+            column: user_password
+            options:
+                comment: 密码
+        lastLoginTime:
+            type: datetime
+            column: last_login_time
+            options:
+                comment: 最近登录时间
+        lastLoginIp:
+            type: string
+            length: 15
+            column: last_login_ip
+            options:
+                comment: 最近登录的IP
+        loginTimes:
+            type: integer
+            column: login_times
+            options:
+                comment: 登录总次数
+                unsigned: true
+                default: 0
+    lifecycleCallbacks: {  }

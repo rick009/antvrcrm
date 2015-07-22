@@ -1,44 +1,11 @@
-antvr_crm:
-    resource: "@AntvrCrmBundle/Controller/"
-    type:     annotation
+antvr_workorder:
+    resource: "@AntvrWorkorderBundle/Resources/config/routing.yml"
     prefix:   /
 
-icsoc_core:
-    resource: "@IcsocCoreBundle/Resources/config/routing.yml"
-    prefix:   /
-
-icsoc_api:
-    resource: "@IcsocApiBundle/Resources/config/routing.yml"
-    prefix:   /
-
-icsoc_order:
-    resource: "@IcsocOrderBundle/Resources/config/routing.yml"
-    prefix:   /
-
-icsoc_contact:
-    resource: "@IcsocContactBundle/Resources/config/routing.yml"
-    prefix:   /
-
-icsoc_client:
-    resource: "@IcsocClientBundle/Resources/config/routing.yml"
-    prefix:   /
-
-icsoc_phone:
-    resource: "@IcsocPhoneBundle/Resources/config/routing.yml"
-    prefix:   /
-
-icsoc_security:
-    resource: "@IcsocSecurityBundle/Resources/config/routing.yml"
-    prefix:   /
-
-icsoc_billing:
-    resource: "@IcsocBillingBundle/Resources/config/routing.yml"
+antvr_user:
+    resource: "@AntvrUserBundle/Resources/config/routing.yml"
     prefix:   /
 
 icsoc_ui:
     resource: "@IcsocUIBundle/Resources/config/routing.yml"
     prefix:   /
-
-app:
-    resource: "@AppBundle/Controller/"
-    type:     annotation

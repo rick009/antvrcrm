@@ -1,0 +1,3 @@
+antvr_workorder_homepage:
+    path:     /hello/{name}
+    defaults: { _controller: AntvrWorkorderBundle:Default:index }

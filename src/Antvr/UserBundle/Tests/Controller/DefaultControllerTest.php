@@ -1,6 +1,6 @@
 <?php
 
-namespace Antvr\CrmBundle\Tests\Controller;
+namespace Antvr\UserBundle\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 

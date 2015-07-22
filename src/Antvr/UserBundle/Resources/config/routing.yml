@@ -1,0 +1,9 @@
+antvr_user_login:
+    path: /login
+    defaults: { _controller: AntvrUserBundle:User:login }
+
+antvr_user_login_check:
+    path:    /login_check
+
+antvr_user_logout:
+    path:    /logout

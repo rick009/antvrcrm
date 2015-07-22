@@ -1,0 +1,5 @@
+services:
+    icsoc_security.filter_input:
+        class: Icsoc\SecurityBundle\EventListener\FilterInputListener
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }

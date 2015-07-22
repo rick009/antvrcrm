@@ -1,0 +1,94 @@
+{% extends '@IcsocUI/page.html.twig' %}
+
+{% block body %}
+    <div class="easyui-panel" style="padding: 10px">
+        <form class="pure-form" method="post" enctype="multipart/form-data">
+            <label for="time">产生时间：</label>
+            <input id="time" type="text" name="time" class="easyui-datebox" value="">
+            <label for="vcc_code">企业代码：</label>
+            <input id="vcc_code" type="text" name="vcc_code" >&nbsp;&nbsp;
+            <button type="button" class="pure-button pure-button-primary" id="search">查询</button>
+        </form>
+    </div>
+    <div id="list"></div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function () {
+            $('#list').datagrid({
+                title:'接口拉取结果情况',
+                nowrap: true,
+                striped: true,
+                collapsible:false,
+                pagination:true,
+                rownumbers:true,
+                queryParams:{"is_source":4, "time":"{{ 'now'|date('Y-m-d') }}"},
+                url:'{{ path('icsoc_billing_cdr_error_list') }}',
+                columns:[[
+                    {field:'ck',checkbox:true},
+                    {title:'月份',field:'month',width:120,sortable:true,align:'center'},
+                    {title:'错误文件',field:'data',width:350,sortable:true,align:'center'},
+                    {title:'错误信息',field:'error',width:350,sortable:true,align:'center'},
+                    {title:'产生时间',field:'addtime',width:150,sortable:true,align:'center'},
+                    {title:'企业代码',field:'vcc_code',width:150,sortable:true,align:'center'}
+                ]],
+                toolbar:[{
+                    iconCls:'icon-remove',
+                    text:'删除',
+                    handler:function()
+                    {
+                        var ids = getSelections('list','id');
+                        if (ids == '') {
+                            $.messager.alert('提示','请选中要删除的数据！','warning');
+                            return;
+                        }
+                        $.messager.confirm('提示', '您确定要删除这些数据么？', function(r){
+                            if (r) {
+                                $.ajax({
+                                    type:"POST",
+                                    url:"{{ path('icsoc_billing_cdr_erros_del') }}",
+                                    data:{id:ids},
+                                    success:function (responce){
+                                        $('#list').datagrid('reload');
+                                    }
+                                });
+                            }
+                        });
+                    }
+                }]
+            });
+
+            $('#search').click(function(){
+                var vcc_code = $('#vcc_code').val();
+                var time = $('#time').datebox("getValue");
+
+                var query = new Object();
+                if ($.trim(vcc_code).length >= 1) {
+                    query.vcc_code = vcc_code;
+                }
+                if ($.trim(time).length >= 1) {
+                    query.time = time;
+                }
+                query.is_source = 4;
+                $('#list').datagrid('options').queryParams = query;
+                $('#list').datagrid('reload');
+            });
+            $("#time").datebox("setValue", "{{ 'now'|date("Y-m-d") }}");
+        })
+
+        /**
+         *列表得到选中的id
+         */
+        function getSelections(list,field)
+        {
+            var ids = [];
+            var rows = $('#'+list).datagrid('getSelections');
+            for(var i=0;i<rows.length;i++){
+                ids.push(rows[i][field]);
+            }
+            return ids.join(',');
+        }
+    </script>
+{% endblock %}

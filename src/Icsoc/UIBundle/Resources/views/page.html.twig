@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>{% block title %}运营管理系统{% endblock %}</title>
+    {% block stylesheets %}
+        {% stylesheets
+        'bundles/icsocui/easyui/themes/bootstrap/easyui.css'
+        'bundles/icsocui/easyui/themes/icon.css'
+        'bundles/icsocui/easyui/themes/color.css'
+        'bundles/icsocui/font-awesome/css/font-awesome.min.css'
+        'bundles/icsocui/pure/pure-min.css'
+        filter="cssrewrite"
+        %}
+        <link rel="stylesheet" href="{{ asset_url }}" />
+        {% endstylesheets %}
+    {% endblock %}
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+</head>
+<body style="font-size: 81.25%;overflow-y:scroll;">
+{% block body %}{% endblock %}
+{% block javascripts %}
+    {% javascripts
+    'bundles/icsocui/js/jquery.min.js'
+    'bundles/icsocui/easyui/jquery.easyui.min.js'
+    'bundles/icsocui/easyui/locale/easyui-lang-zh_CN.js'
+    'bundles/icsocui/js/common.js'
+    filter='uglifyjs'
+    %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+</body>
+</html>

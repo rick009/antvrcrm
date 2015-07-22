@@ -1,0 +1,70 @@
+{% extends 'IcsocUIBundle::base.html.twig' %}
+
+{% block body %}
+    <div class="easyui-panel">
+        <div class="pure-g" style="margin: 10px">
+            <div class="pure-control-group pure-u-1-1">
+                <h2 style="color: green">{{ datavalue.msg_detail }}</h2>
+            </div>
+            <div class="pure-control-group pure-u-1-1">
+                <p id="redirectionMsg">
+                    {% if datavalue.auto_redirect %}如果您不做出选择，将在 <span id="spanSeconds" style="color: red;font-weight: bold">3</span> 秒后跳转到第一个链接地址。{% endif %}
+                </p>
+            </div>
+            <div class="pure-control-group pure-u-1-1">
+                <p>
+                    {% for link in datavalue.link %}
+                        <a class="pure-button pure-button-primary" href="{% if link.type is defined %}javascript:window.parent.location.href='{{ link.href }}'{% else %}{{ link.href }}{% endif %}">
+                            <i class="fa fa-arrow-circle-o-right fa-2"></i> {{ link.text }}
+                        </a>
+                    {% endfor %}
+                </p>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    {% if datavalue.auto_redirect %}
+        <script language="JavaScript">
+            <!--
+            var seconds = 3;
+            var defaultUrl = "{{ datavalue.default_url }}";
+            var intervalId = null;
+            onload = function()
+            {
+                if (defaultUrl == 'javascript:history.go(-1)' && window.history.length == 0)
+                {
+                    document.getElementById('redirectionMsg').innerHTML = '';
+                    return;
+                }
+                intervalId = window.setInterval(redirection, 1000);
+            };
+            function redirection()
+            {
+                if (seconds <= 0)
+                {
+                    window.clearInterval(intervalId);
+                    return;
+                }
+
+                seconds--;
+                document.getElementById('spanSeconds').innerHTML =  seconds;
+
+                if (seconds == 0)
+                {
+                    window.clearInterval(intervalId);
+                    {% if datavalue.link_type == 1 %}
+                    window.parent.location.href = defaultUrl;
+                    {% else %}
+                    location.href = defaultUrl;
+                    {% endif %}
+
+                }
+            }
+            //-->
+        </script>
+    {% endif %}
+{% endblock %}

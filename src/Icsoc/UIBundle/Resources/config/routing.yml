@@ -1,0 +1,12 @@
+icsoc_ui_homepage:
+    path:     /
+    defaults: { _controller: IcsocUIBundle:Default:index }
+
+icsoc_ui_message:
+    path: demo/message
+    defaults: { _controller: IcsocUIBundle:Default:message }
+
+icsoc_ui_dashboard:
+    path: /dashboard
+    defaults: { _controller: IcsocUIBundle:Default:dashboard }
+

@@ -1,0 +1,11 @@
+services:
+#    icsoc_core.example:
+#        class: Icsoc\CoreBundle\Example
+#        arguments: [@service_id, "plain_value", %parameter%]
+    icsoc_core.export.excel:
+        class: Icsoc\CoreBundle\Export\ExcelExport
+        arguments: [@service_container]
+
+    icsoc_core.export.csv:
+        class: Icsoc\CoreBundle\Export\CsvExport
+        arguments: [@service_container]

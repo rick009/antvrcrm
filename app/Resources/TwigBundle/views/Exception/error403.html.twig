@@ -1,0 +1,40 @@
+{% extends 'IcsocUIBundle::page.html.twig' %}
+{% block content %}
+    <div class="alert alert-danger">
+        <p id="redirectionMsg">
+            将在 <span id="spanSeconds" class="badge badge-pink">3</span> 秒后跳转到登录页面。
+        </p>
+        <p>
+            {{ exception.message|nl2br|format_file_from_text }}
+        </p>
+    </div>
+{% endblock %}
+{% block footer %}
+        <script language="JavaScript">
+            <!--
+            var seconds = 3;
+            var intervalId = null;
+            onload = function()
+            {
+                intervalId = window.setInterval(redirection, 1000);
+            };
+            function redirection()
+            {
+                if (seconds <= 0)
+                {
+                    window.clearInterval(intervalId);
+                    return;
+                }
+
+                seconds--;
+                document.getElementById('spanSeconds').innerHTML = seconds.toString();
+
+                if (seconds == 0)
+                {
+                    window.clearInterval(intervalId);
+                    window.parent.location.href = '{{ path('icsoc_security_login') }}';
+                }
+            }
+            //-->
+        </script>
+{% endblock %}

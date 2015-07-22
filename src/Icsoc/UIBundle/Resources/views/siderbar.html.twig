@@ -1,0 +1,30 @@
+<style>
+    #siderbar .pure-menu-selected {
+        background: #1f8dd6;
+    }
+
+    #siderbar .pure-menu-selected a {
+        color: #fff;
+    }
+
+    #siderbar li.pure-menu-selected a:hover,
+    #siderbar li.pure-menu-selected a:focus {
+        background: none;
+    }
+</style>
+<div id="siderbar" class="easyui-accordion" data-options="fit:true">
+    {% for menu in menus %}
+        <div title="<i class='fa {{ menu.icon }}'></i> {{ menu.label }}" style="overflow:auto;padding: 10px 0 10px 10px">
+            <div class="pure-menu">
+                <ul class="pure-menu-list" style="padding-right: 10px">
+                    {% for item in menu.children %}
+                        <li class="pure-menu-item" data-url="{{ path(item.url) }}"
+                             data-icon="fa {{ item.icon }}" data-options="iconCls: 'fa {{ item.icon }}'">
+                            <a href="#" class="pure-menu-link"><i class="fa {{ item.icon }}"></i> {{ item.label }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    {% endfor %}
+</div>

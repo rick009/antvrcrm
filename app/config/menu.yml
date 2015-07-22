@@ -1,0 +1,28 @@
+parameters:
+    menus:
+        account:
+            label: '账户管理'
+            icon: 'fa-folder'
+            children:
+                client: { label:'客户管理', icon: 'fa-th', url: 'icsoc_client_index' }
+                contact: { label:'联系人管理', icon: 'fa-user', url: 'icsoc_contact_index' }
+                order: { label:'订单管理', icon: 'fa-user', url: 'icsoc_order_index' }
+        bill:
+            label: '账务管理'
+            icon: 'fa-folder'
+            children:
+                cdr_info: { label:'cdrz账务', icon: 'fa-user', url: 'icsoc_billing_cdr_select_info' }
+                cdr_bill: { label:'出账历史', icon: 'fa-user', url: 'icsoc_billing_cdr_history_index' }
+                cdr_bill_details: { label:'账单详情', icon: 'fa-user', url: 'icsoc_billing_cdr_bill_details' }
+        #trunk:
+            #label: '账单管理'
+            #icon: 'fa-folder'
+            #children:
+                #trunk_monitor: { label:'中继监控', icon: 'fa-user', url: 'homepage' }
+                #trunk_statistic: { label:'中继统计', icon: 'fa-user', url: 'homepage' }
+        #system:
+            #label: '系统管理'
+            #icon: 'fa-folder'
+            #children:
+                #system_user: { label:'系统用户管理', icon: 'fa-user', url: 'homepage' }
+                #notice: { label:'公告管理', icon: 'fa-user', url: 'homepage' }

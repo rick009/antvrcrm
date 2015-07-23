@@ -77,11 +77,15 @@ Antvr\WorkorderBundle\Entity\Workorder:
                 default: 0
                 unsigned: true
         createTime:
-            type: datetime
+            type: date
             column: create_time
             options:
                 comment: 创建时间
-                unsigned: true
+        doneTime:
+            type: date
+            column: done_time
+            options:
+                comment: 处理完成时间
         createUser:
             type: integer
             column: create_user

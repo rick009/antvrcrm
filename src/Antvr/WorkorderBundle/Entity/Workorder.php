@@ -360,4 +360,32 @@ class Workorder
     {
         return $this->createUser;
     }
+    /**
+     * @var \DateTime
+     */
+    private $doneTime;
+
+
+    /**
+     * Set doneTime
+     *
+     * @param \DateTime $doneTime
+     * @return Workorder
+     */
+    public function setDoneTime($doneTime)
+    {
+        $this->doneTime = $doneTime;
+
+        return $this;
+    }
+
+    /**
+     * Get doneTime
+     *
+     * @return \DateTime 
+     */
+    public function getDoneTime()
+    {
+        return $this->doneTime;
+    }
 }

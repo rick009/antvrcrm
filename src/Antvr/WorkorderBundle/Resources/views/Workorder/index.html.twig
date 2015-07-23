@@ -1,0 +1,142 @@
+{% extends '@IcsocUI/page.html.twig' %}
+
+{% block body %}
+    <div class="easyui-panel" style="padding: 10px">
+        <form id="form" name="form" class="pure-form pure-form-aligned" novalidate="novalidate" method="post" action="{{ path('antvr_workorder_new') }}">
+            <div class="pure-control-group">
+                <label for="user_name">客户姓名</label>
+                <input class="easyui-validatebox pure-input-1-4" {% if client_info.name is defined %} value="{{ client_info.name }}" {% endif %} id="user_name" name="user_name" type="text" placeholder="客户姓名" required="required">
+            </div>
+
+            <div class="pure-control-group">
+                <label for="user_phone">联系电话</label>
+                <input id="user_phone" name="user_phone" class="pure-input-1-4" type="text" placeholder="联系电话" {% if client_info.phone is defined %} value="{{ client_info.phone }}"{% endif %}>
+            </div>
+
+            <div class="pure-control-group">
+                <label for="problem_source">问题来源</label>
+                <select id="problem_source" name="problem_source" class="pure-input-1-4">
+                    <option value="">请选择问题来源</option>
+                    {% for key,option in problemSources %}
+                        <option value="{{ key }}" {% if client_info.enterprise_type is defined and key == client_info.enterprise_type %}selected{% endif %} >{{ option }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="pure-control-group">
+                <label for="type_level1">咨询类别</label>
+                <select id="type_level1" name="type_level1" class="pure-input-1-6">
+                    <option value="">请选择类别1</option>
+                    {% for key,option in typeLevels %}
+                        <option value="{{ key }}" {% if client_info.enterprise_type is defined and key == client_info.enterprise_type %}selected{% endif %} >{{ option.name }}</option>
+                    {% endfor %}
+                </select>
+                <select id="type_level2" name="type_level2" class="pure-input-1-6">
+                    <option value="">请选择类别2</option>
+                </select>
+                <select id="type_level3" name="type_level3" class="pure-input-1-6">
+                    <option value="">请选择类别3</option>
+                </select>
+            </div>
+
+            <div class="pure-control-group">
+                <label for="problem_content">问题描述</label>
+                <textarea id="problem_content" name="problem_content" rows="5" class="pure-input-1-2" placeholder="问题描述"></textarea>
+            </div>
+
+            <div class="pure-control-group">
+                <label for="reply_content">回复内容</label>
+                <textarea id="reply_content" name="reply_content" rows="5" class="pure-input-1-2" placeholder="回复内容"></textarea>
+            </div>
+
+            <div class="pure-control-group">
+                <label for="remark">特殊备注</label>
+                <textarea id="remark" name="remark" rows="5" class="pure-input-1-2" placeholder="备注"></textarea>
+            </div>
+
+            <div class="pure-control-group">
+                <label for="result">处理结果</label>
+                <select id="result" name="result" class="pure-input-1-6">
+                    <option value="0">未处理</option>
+                    <option value="1">已处理</option>
+                </select>
+                <input type="hidden" id="is_done" name="is_done" value="">
+            </div>
+
+            <div class="pure-controls">
+                <button id="submit" type="submit" class="pure-button pure-button-primary">
+                    <i class="fa fa-save"></i> 保存
+                </button>
+                {% if client_info.id is defined %}
+                    <input type="hidden" id="id" name="id">
+                {% endif %}
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script type="application/javascript">
+        $(document).ready(function () {
+            $('#submit').click(function () {
+                var $user_name = $('#user_name');
+                if (!$user_name.validatebox('isValid')) {
+                    $user_name.focus();
+                    return false;
+                }
+            });
+
+            $('#type_level1').on('change', function () {
+                var type_level1 = $(this).val();
+                $('#type_level2').length = 1;
+                $('#type_level3').length = 1;
+                if (!type_level1) {
+                    return false;
+                }
+                $.ajax({
+                    url: "{{ path('antvr_workorder_get_type_level2') }}?typelevel1="+type_level1,
+                    dataType: 'json',
+                    cache: false,
+                    success: function (response) {
+                        $.each(response, function(index, value) {
+                            $('<option value="'+index+'">'+value.name+'</option>').appendTo($('#type_level2'));
+                        });
+                    }
+                });
+            });
+
+            $('#type_level2').on('change', function () {
+                var type_level1 = $('#type_level1').val();
+                var type_level2 = $(this).val();
+                $('#type_level3').length = 1;
+                if (!type_level2) {
+                    return false;
+                }
+                $.ajax({
+                    url: "{{ path('antvr_workorder_get_type_level3') }}",
+                    dataType: 'json',
+                    data: {typelevel1: type_level1, typelevel2: type_level2},
+                    cache: false,
+                    success: function (response) {
+                        if (response) {
+                            $.each(response, function(index, value) {
+                                $('<option value="'+index+'">'+value.name+'</option>').appendTo($('#type_level3'));
+                            });
+                        }
+                    }
+                });
+            });
+
+            $('#result').on('change', function () {
+                var value = $(this).val();
+                if (value == 1) {
+                    $('#is_done').val('1');
+                } else {
+                    $('#is_done').val('');
+                }
+            });
+        });
+    </script>
+{% endblock %}

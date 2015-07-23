@@ -2,7 +2,6 @@
 
 namespace Antvr\UserBundle\Controller;
 
-use Antvr\UserBundle\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class UserController extends Controller
@@ -16,9 +15,6 @@ class UserController extends Controller
 
         // last username entered by the user
         $lastUsername = $authenticationUtils->getLastUsername();
-
-        $user = new User();
-        var_dump($this->get('security.password_encoder')->encodePassword($user, '123456'));
 
         return $this->render('AntvrUserBundle:User:login.html.twig', array(
             'last_username' => $lastUsername,

@@ -1,3 +1,15 @@
-antvr_workorder_homepage:
-    path:     /hello/{name}
-    defaults: { _controller: AntvrWorkorderBundle:Default:index }
+antvr_workorder_new:
+    path:     /workorder/new
+    defaults: { _controller: AntvrWorkorderBundle:Workorder:new }
+
+antvr_workorder_list:
+    path:     /workorder/list
+    defaults: { _controller: AntvrWorkorderBundle:Workorder:list }
+
+antvr_workorder_get_type_level2:
+    path: /workorder/typelevel2
+    defaults: { _controller: AntvrWorkorderBundle:Workorder:getTypeLevel2 }
+
+antvr_workorder_get_type_level3:
+    path: /workorder/typelevel3
+    defaults: { _controller: AntvrWorkorderBundle:Workorder:getTypeLevel3 }

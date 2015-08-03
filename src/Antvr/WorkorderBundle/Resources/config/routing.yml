@@ -2,9 +2,17 @@ antvr_workorder_new:
     path:     /workorder/new
     defaults: { _controller: AntvrWorkorderBundle:Workorder:new }
 
+antvr_workorder_edit:
+    path:     /workorder/edit/{id}
+    defaults: { _controller: AntvrWorkorderBundle:Workorder:edit }
+
 antvr_workorder_list:
     path:     /workorder/list
     defaults: { _controller: AntvrWorkorderBundle:Workorder:list }
+
+antvr_workorder_list_query:
+    path:     /workorder/list/query
+    defaults: { _controller: AntvrWorkorderBundle:Workorder:listQuery }
 
 antvr_workorder_get_type_level2:
     path: /workorder/typelevel2

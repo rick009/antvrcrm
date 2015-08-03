@@ -2,15 +2,15 @@
 
 {% block body %}
     <div class="easyui-panel" style="padding: 10px">
-        <form id="form" name="form" class="pure-form pure-form-aligned" novalidate="novalidate" method="post" action="{{ path('antvr_workorder_new') }}">
+        <form id="form" name="form" class="pure-form pure-form-aligned" novalidate="novalidate" method="post" action="{% if workorder is defined %}{{ path(action, {id:workorder.id}) }}{% else %}{{ path(action) }}{% endif %}">
             <div class="pure-control-group">
                 <label for="user_name">客户姓名</label>
-                <input class="easyui-validatebox pure-input-1-4" {% if client_info.name is defined %} value="{{ client_info.name }}" {% endif %} id="user_name" name="user_name" type="text" placeholder="客户姓名" required="required">
+                <input class="easyui-validatebox pure-input-1-4" value="{{ workorder.clientName|default('') }}" id="user_name" name="user_name" type="text" placeholder="客户姓名" required="required">
             </div>
 
             <div class="pure-control-group">
                 <label for="user_phone">联系电话</label>
-                <input id="user_phone" name="user_phone" class="pure-input-1-4" type="text" placeholder="联系电话" {% if client_info.phone is defined %} value="{{ client_info.phone }}"{% endif %}>
+                <input id="user_phone" name="user_phone" class="pure-input-1-4" type="text" placeholder="联系电话" value="{{ workorder.clientPhone|default('') }}">
             </div>
 
             <div class="pure-control-group">
@@ -18,7 +18,7 @@
                 <select id="problem_source" name="problem_source" class="pure-input-1-4">
                     <option value="">请选择问题来源</option>
                     {% for key,option in problemSources %}
-                        <option value="{{ key }}" {% if client_info.enterprise_type is defined and key == client_info.enterprise_type %}selected{% endif %} >{{ option }}</option>
+                        <option value="{{ key }}" {% if workorder.problemSource is defined and key == workorder.problemSource %}selected{% endif %} >{{ option }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -28,7 +28,7 @@
                 <select id="type_level1" name="type_level1" class="pure-input-1-6">
                     <option value="">请选择类别1</option>
                     {% for key,option in typeLevels %}
-                        <option value="{{ key }}" {% if client_info.enterprise_type is defined and key == client_info.enterprise_type %}selected{% endif %} >{{ option.name }}</option>
+                        <option value="{{ key }}" {% if workorder.typeLevel1 is defined and key == workorder.typeLevel1 %}selected{% endif %} >{{ option.name }}</option>
                     {% endfor %}
                 </select>
                 <select id="type_level2" name="type_level2" class="pure-input-1-6">
@@ -41,24 +41,24 @@
 
             <div class="pure-control-group">
                 <label for="problem_content">问题描述</label>
-                <textarea id="problem_content" name="problem_content" rows="5" class="pure-input-1-2" placeholder="问题描述"></textarea>
+                <textarea id="problem_content" name="problem_content" rows="5" class="pure-input-1-2" placeholder="问题描述">{{ workorder.problemContent|default('') }}</textarea>
             </div>
 
             <div class="pure-control-group">
                 <label for="reply_content">回复内容</label>
-                <textarea id="reply_content" name="reply_content" rows="5" class="pure-input-1-2" placeholder="回复内容"></textarea>
+                <textarea id="reply_content" name="reply_content" rows="5" class="pure-input-1-2" placeholder="回复内容">{{ workorder.replyContent|default('') }}</textarea>
             </div>
 
             <div class="pure-control-group">
                 <label for="remark">特殊备注</label>
-                <textarea id="remark" name="remark" rows="5" class="pure-input-1-2" placeholder="备注"></textarea>
+                <textarea id="remark" name="remark" rows="5" class="pure-input-1-2" placeholder="备注">{{ workorder.remark|default('') }}</textarea>
             </div>
 
             <div class="pure-control-group">
                 <label for="result">处理结果</label>
                 <select id="result" name="result" class="pure-input-1-6">
                     <option value="0">未处理</option>
-                    <option value="1">已处理</option>
+                    <option value="1" {% if workorder.result is defined and workorder.result == 1 %}selected{% endif %}>已处理</option>
                 </select>
                 <input type="hidden" id="is_done" name="is_done" value="">
             </div>
@@ -67,8 +67,8 @@
                 <button id="submit" type="submit" class="pure-button pure-button-primary">
                     <i class="fa fa-save"></i> 保存
                 </button>
-                {% if client_info.id is defined %}
-                    <input type="hidden" id="id" name="id">
+                {% if workorder.id is defined %}
+                    <input type="hidden" id="id" name="id" value="{{ workorder.id }}">
                 {% endif %}
             </div>
         </form>
@@ -87,9 +87,12 @@
                     return false;
                 }
             });
+            //getTypeLevel2();
+            //getTypeLevel3();
 
-            $('#type_level1').on('change', function () {
-                var type_level1 = $(this).val();
+            $('#type_level1').on('change', getTypeLevel2);
+            function getTypeLevel2() {
+                var type_level1 = $('#type_level1').val();
                 $('#type_level2').length = 1;
                 $('#type_level3').length = 1;
                 if (!type_level1) {
@@ -105,11 +108,12 @@
                         });
                     }
                 });
-            });
+            }
 
-            $('#type_level2').on('change', function () {
+            $('#type_level2').on('change', getTypeLevel3);
+            function getTypeLevel3() {
                 var type_level1 = $('#type_level1').val();
-                var type_level2 = $(this).val();
+                var type_level2 = $('#type_level2').val();
                 $('#type_level3').length = 1;
                 if (!type_level2) {
                     return false;
@@ -127,7 +131,7 @@
                         }
                     }
                 });
-            });
+            }
 
             $('#result').on('change', function () {
                 var value = $(this).val();

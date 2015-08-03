@@ -6,6 +6,7 @@ use Antvr\WorkorderBundle\Entity\Workorder;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Icsoc\CoreBundle\Export\DataType\ArrayType;
 
 class WorkorderController extends Controller
 {
@@ -248,7 +249,70 @@ class WorkorderController extends Controller
 
         return $this->render('AntvrWorkorderBundle:Workorder:index.html.twig', array(
             'problemSources' => $this->problemSources,
-            'typeLevels' => $this->typeLevels
+            'typeLevels' => $this->typeLevels,
+            'action' => 'antvr_workorder_new'
+        ));
+    }
+
+    /**
+     * 编辑表单
+     *
+     * @param $id
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function editAction($id)
+    {
+        $request = $this->get('request');
+        $em = $this->get('doctrine.orm.default_entity_manager');
+        /** @var Workorder $workorder */
+        $workorder = $em->getRepository('AntvrWorkorderBundle:Workorder')->find($id);
+
+        if ($request->getMethod() == 'POST') {
+            $data = $request->request->all();
+
+            $workorder->setClientName($data['user_name']);
+            $workorder->setClientPhone($data['user_phone']);
+            $workorder->setProblemContent($data['problem_content']);
+            $workorder->setProblemSource($data['problem_source']);
+            $workorder->setRemark($data['remark']);
+            $workorder->setTypeLevel1($data['type_level1']);
+            $workorder->setTypeLevel2($data['type_level2']);
+            $workorder->setTypeLevel3($data['type_level3']);
+            $workorder->setReplyContent($data['reply_content']);
+            $workorder->setResult($data['result']);
+
+            if (isset($data['is_done']) && $data['is_done']) {
+                $workorder->setDoneTime(new \DateTime());
+            } else {
+                $workorder->setDoneTime(new \DateTime('0000-00-00'));
+            }
+
+            $em->persist($workorder);
+            $em->flush();
+
+            $message = '工单编辑成功';
+            $type = "success";
+            $link = array(
+                array('text'=>'工单列表','href'=>$this->generateUrl('antvr_workorder_list')),
+            );
+
+            $data = array(
+                'data'=>array(
+                    'msg_detail' => $message,
+                    'type' => $type,
+                    'link' => $link
+                )
+            );
+
+            return $this->redirect($this->generateUrl('icsoc_ui_message', $data));
+        }
+
+        return $this->render('AntvrWorkorderBundle:Workorder:index.html.twig', array(
+            'problemSources' => $this->problemSources,
+            'typeLevels' => $this->typeLevels,
+            'workorder' => $workorder,
+            'action' => 'antvr_workorder_edit'
         ));
     }
 
@@ -290,6 +354,117 @@ class WorkorderController extends Controller
 
     public function listAction()
     {
+        return $this->render('AntvrWorkorderBundle:Workorder:list.html.twig', array(
+            'problemSources' => $this->problemSources,
+            'typeLevels' => $this->typeLevels
+        ));
+    }
 
+    public function listQueryAction(Request $request)
+    {
+        $page = $request->get('page', '1');
+        $limit = $request->get('rows', '10');
+        $sort = $request->get('sort', '1');
+        $order = $request->get('order', 'DESC');
+        $keyword = $request->get('keyword', '');
+        $result = $request->get('result', '');
+        $export = $request->get('export', '');
+
+        $where = '';
+
+        if (!empty($keyword)) {
+            $where .= ' AND (client_name like "%' . $keyword .'%" OR client_phone like "%' . $keyword .'%")';
+        }
+        if ($result !== '') {
+            $where .= ' AND result='.$result.' ';
+        }
+
+        $conn = $this->get('doctrine.dbal.default_connection');
+
+        $total = $conn->fetchColumn(
+            'SELECT count(*) ' .
+            'FROM workorders WHERE 1 ' . $where
+        );
+
+        $total_pages = ceil($total/$limit);
+
+        $page = $page > $total_pages ? $total_pages : $page;
+        $start = $limit*$page - $limit;
+        $start = $start > 0 ? $start : 0;
+
+        if (empty($export)) {
+            $data = $conn->fetchAll(
+                'SELECT * ' .
+                'FROM workorders WHERE 1 ' . $where . "ORDER BY $sort $order limit $start,$limit"
+            );
+        } else {
+            $data = $conn->fetchAll(
+                'SELECT * ' .
+                'FROM workorders WHERE 1 ' . $where . "ORDER BY $sort $order"
+            );
+        }
+
+        $rows = array();
+
+        foreach ($data as $k => $v) {
+            $rows[$k] = $v;
+            $rows[$k]['problem_source'] = isset($this->problemSources[$v['problem_source']]) ?
+                $this->problemSources[$v['problem_source']] : '';
+            $rows[$k]['result_name'] = $v['result'] == 1 ? '已解决' : '未解决';
+            $typeLevel1 = $v['type_level1'];
+            $typeLevel1Name = empty($this->typeLevels[$typeLevel1]['name']) ?
+                '' : $this->typeLevels[$typeLevel1]['name'];
+            $typeLevel2 = $v['type_level2'];
+            $typeLevel2Name = empty($this->typeLevels[$typeLevel1]['children'][$typeLevel2]['name'])
+                ? '' : $this->typeLevels[$typeLevel1]['children'][$typeLevel2]['name'];
+            $typeLevel3 = $v['type_level3'];
+            $typeLevel3Name = empty($this->typeLevels[$typeLevel1]['children'][$typeLevel2]['children'][$typeLevel3]['name']) ?
+                '' : $this->typeLevels[$typeLevel1]['children'][$typeLevel2]['children'][$typeLevel3]['name'];
+            $rows[$k]['type_level'] = $typeLevel1Name.'-'.$typeLevel2Name.'-'.$typeLevel3Name;
+        }
+
+        $list = array(
+            'total' => $total,
+            'rows' => $rows,
+        );
+
+        if (!empty($export)) {
+            try {
+                $title = array(
+                    'name' => '客户名称',
+                    'address' => '地址',
+                    'industry' => '行业',
+                    'website' => '网站',
+                    'grade' => '级别',
+                    'create_time' => '创建时间'
+                );
+
+                $datas = array();
+                $fields = array();
+
+                foreach ($rows as $k => $v) {
+                    foreach ($title as $key => $val) {
+                        if (!isset($v[$key])) {
+                            $v[$key] = '';
+                        }
+                        $datas[$k][$key] = $v[$key];
+                    }
+                }
+                foreach ($title as $item => $itemText) {
+                    $fields[$item] = array(
+                        'name' => $itemText,
+                        'type' => 'string'
+                    );
+                }
+
+                $source = new ArrayType($datas, $fields);
+                $excel = $this->get('icsoc_core.export.csv');
+                $excel->export($source);
+            } catch (\Exception $e) {
+                die($e->getMessage());
+            }
+        }
+
+        return new JsonResponse($list);
     }
 }

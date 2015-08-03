@@ -78,7 +78,7 @@ class Workorder
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -101,7 +101,7 @@ class Workorder
     /**
      * Get clientName
      *
-     * @return string 
+     * @return string
      */
     public function getClientName()
     {
@@ -124,7 +124,7 @@ class Workorder
     /**
      * Get clientPhone
      *
-     * @return string 
+     * @return string
      */
     public function getClientPhone()
     {
@@ -147,7 +147,7 @@ class Workorder
     /**
      * Get problemSource
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getProblemSource()
     {
@@ -170,7 +170,7 @@ class Workorder
     /**
      * Get typeLevel1
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getTypeLevel1()
     {
@@ -193,7 +193,7 @@ class Workorder
     /**
      * Get typeLevel2
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getTypeLevel2()
     {
@@ -216,7 +216,7 @@ class Workorder
     /**
      * Get typeLevel3
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getTypeLevel3()
     {
@@ -239,7 +239,7 @@ class Workorder
     /**
      * Get problemContent
      *
-     * @return string 
+     * @return string
      */
     public function getProblemContent()
     {
@@ -262,7 +262,7 @@ class Workorder
     /**
      * Get replyContent
      *
-     * @return string 
+     * @return string
      */
     public function getReplyContent()
     {
@@ -285,7 +285,7 @@ class Workorder
     /**
      * Get remark
      *
-     * @return string 
+     * @return string
      */
     public function getRemark()
     {
@@ -308,7 +308,7 @@ class Workorder
     /**
      * Get result
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getResult()
     {
@@ -331,7 +331,7 @@ class Workorder
     /**
      * Get createTime
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getCreateTime()
     {
@@ -354,7 +354,7 @@ class Workorder
     /**
      * Get createUser
      *
-     * @return integer 
+     * @return integer
      */
     public function getCreateUser()
     {
@@ -382,7 +382,7 @@ class Workorder
     /**
      * Get doneTime
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getDoneTime()
     {

@@ -7,6 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Icsoc\CoreBundle\Export\DataType\ArrayType;
+use Symfony\Component\VarDumper\VarDumper;
 
 class WorkorderController extends Controller
 {
@@ -368,6 +369,8 @@ class WorkorderController extends Controller
         $order = $request->get('order', 'DESC');
         $keyword = $request->get('keyword', '');
         $result = $request->get('result', '');
+        $startTime = $request->get('start_time', '');
+        $endTime = $request->get('end_time', '');
         $export = $request->get('export', '');
 
         $where = '';
@@ -377,6 +380,12 @@ class WorkorderController extends Controller
         }
         if ($result !== '') {
             $where .= ' AND result='.$result.' ';
+        }
+        if (!empty($startTime)) {
+            $where .= ' AND create_time >=\''.$startTime.'\' ';
+        }
+        if (!empty($endTime)) {
+            $where .= ' AND create_time <=\''.$endTime.'\' ';
         }
 
         $conn = $this->get('doctrine.dbal.default_connection');
@@ -404,6 +413,14 @@ class WorkorderController extends Controller
             );
         }
 
+        // 查询所有用户
+        $em = $this->get('doctrine.orm.default_entity_manager');
+        $userEntities = $em->getRepository('AntvrUserBundle:User')->findAll();
+        $users = array();
+        foreach ($userEntities as $k => $v) {
+            $users[$v->getId()] = $v->getName();
+        }
+
         $rows = array();
 
         foreach ($data as $k => $v) {
@@ -421,6 +438,10 @@ class WorkorderController extends Controller
             $typeLevel3Name = empty($this->typeLevels[$typeLevel1]['children'][$typeLevel2]['children'][$typeLevel3]['name']) ?
                 '' : $this->typeLevels[$typeLevel1]['children'][$typeLevel2]['children'][$typeLevel3]['name'];
             $rows[$k]['type_level'] = $typeLevel1Name.'-'.$typeLevel2Name.'-'.$typeLevel3Name;
+            $rows[$k]['create_user_name'] = isset($users[$v['create_user']]) ? $users[$v['create_user']] : '';
+            $rows[$k]['problem_content'] = str_ireplace(array("\r", "\n"), '', $v['problem_content']);
+            $rows[$k]['reply_content'] = str_ireplace(array("\r", "\n"), '', $v['reply_content']);
+            $rows[$k]['remark'] = str_ireplace(array("\r", "\n"), '', $v['remark']);
         }
 
         $list = array(
@@ -431,12 +452,17 @@ class WorkorderController extends Controller
         if (!empty($export)) {
             try {
                 $title = array(
-                    'name' => '客户名称',
-                    'address' => '地址',
-                    'industry' => '行业',
-                    'website' => '网站',
-                    'grade' => '级别',
-                    'create_time' => '创建时间'
+                    'client_name' => '客户名称',
+                    'client_phone' => '联系电话',
+                    'problem_source' => '问题来源',
+                    'type_level' => '咨询类别',
+                    'problem_content' => '问题内容',
+                    'reply_content' => '回复内容',
+                    'remark' => '备注',
+                    'result_name' => '状态',
+                    'create_user_name' => '创建人',
+                    'create_time' => '创建时间',
+                    'done_time' => '完成时间'
                 );
 
                 $datas = array();

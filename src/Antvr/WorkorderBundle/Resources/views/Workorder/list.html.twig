@@ -1,0 +1,166 @@
+{% extends '@IcsocUI/page.html.twig' %}
+
+{% block body %}
+    <div class="easyui-panel" style="padding: 10px;margin-top: 5px;margin-bottom: 5px">
+        <form class="pure-form" action="javascript:quick_search()">
+            <label for="keyword">关键字</label>
+            <input id="keyword" type="text" placeholder="客户名称、电话">
+            <label for="result">状态</label>
+            <select id="result">
+                <option value="">全部</option>
+                <option value="0">未解决</option>
+                <option value="1">已解决</option>
+            </select>
+            <label for="start_time">时间</label>
+            <input type="text" id="start_time" class="easyui-datebox" value=""> ~
+            <input type="text" id="end_time" class="easyui-datebox" value="">
+            <button type="submit" class="pure-button pure-button-primary">
+                <i class="fa fa-search"></i> 搜索
+            </button>
+        </form>
+    </div>
+    <div id="clientList"></div>
+    <div id="win"></div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="application/javascript">
+        $(document).ready(function () {
+            $('#clientList').datagrid({
+                title:'工单管理',
+                nowrap: true,
+                striped: true,
+                collapsible:false,
+                pagination:true,
+                rownumbers:true,
+                sortName:'id',
+                sortOrder:'desc',
+                idField:'id',
+                url:'{{ path('antvr_workorder_list_query') }}',
+                rowStyler: function(index,row) {
+                    if (row.result == 1) {
+                        return 'color:green';
+                    } else {
+                        return 'color:red';
+                    }
+                },
+                frozenColumns:[[
+                    {field:'ck',checkbox:true},
+                    {title:'操作',field:'oper_txt',width:50,align:'center',formatter:function(value,rowData){
+                        return '<span>' +
+                                '<i class="fa fa-pencil-square-o fa-lg" title="编辑" style="cursor:pointer" onclick=fn_edit("'+rowData.id+'")></i>&nbsp;' +
+                                '</span>';
+                    }},
+                    {title:'客户名称',field:'client_name',width:100,sortable:true,align:'left',formatter:function(value,rowData){
+                        return "<span><a href='javascript:void(0);' onclick=fn_edit('"+rowData.id+"','"+value+"') title='编辑客户'>"+value+"</a></span>";
+                    }}
+                ]],
+                columns:[[
+                    {title:'客户电话',field:'client_phone',width:100,sortable:true,align:'center'},
+                    {title:'问题来源',field:'problem_source',width:60,sortable:true,align:'center'},
+                    {title:'咨询类别',field:'type_level',width:150,sortable:true,align:'center'},
+                    {title:'状态',field:'result_name',width:70,sortable:true,align:'center'},
+                    {title:'创建人',field:'create_user_name',width:70,sortable:true,align:'center'},
+                    {title:'创建时间',field:'create_time',width:100,sortable:true,align:'center'},
+                    {title:'完成时间',field:'done_time',width:100,sortable:true,align:'center',formatter:function(value,rowData){
+                        if (value == '0000-00-00') {
+                            return '';
+                        } else {
+                            return value;
+                        }
+                    }}
+                ]],
+                toolbar:[{
+                    iconCls:'icon-add',
+                    text:'新建',
+                    handler:function()
+                    {
+                        location.href = "{{ path('antvr_workorder_new') }}";
+                    }
+                },
+                    {
+                        iconCls:'icon-remove',
+                        text:'删除',
+                        handler:function()
+                        {
+                            var ids = getSelections('clientList','id');
+
+                            if (ids == '') {
+                                $.messager.alert('提示','请选中要删除的数据！','warning');
+                                return;
+                            }
+
+                            $.messager.confirm('提示', '您确定要删除这些数据么？', function(r){
+                                if (r) {
+                                    $.ajax({
+                                        type:"POST",
+                                        url:"{{ path('antvr_workorder_new') }}",
+                                        data:{id:ids},
+                                        dataType:'json',
+                                        success:function (responce){
+                                            if (responce['error']=='0') {
+                                                $('#clientList').datagrid('reload');
+                                            } else {
+                                                $.messager.alert('提示',responce['message'],'info');
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    },
+                    {
+                        iconCls:'icon-save',
+                        text:'导出',
+                        handler:function()
+                        {
+                            var keyword = $('#keyword').val();
+                            var param = encodeURI("keyword="+keyword+"&export=1");
+                            location.href = "{{ path('antvr_workorder_list_query') }}?"+param;
+                        }
+                    }]
+            });
+        });
+
+        /**
+         * 搜索
+         */
+        function quick_search()
+        {
+            var $clientList = $('#clientList');
+            var keyword = $('#keyword').val();
+            var result = $('#result').val();
+            var queryParams = $clientList.datagrid('options').queryParams;
+            queryParams.keyword = keyword;
+            queryParams.result = result;
+            queryParams.start_time = $('#start_time').datebox('getValue');
+            queryParams.end_time = $('#end_time').datebox('getValue');
+            $clientList.datagrid('reload');
+        }
+
+        /**
+         * 编辑
+         */
+        function fn_edit(id)
+        {
+            var $url = "{{ path('antvr_workorder_edit', {id:'id'}) }}";
+            $url = $url.replace('id', id);
+            location.href = $url;
+        }
+
+        /**
+         *列表得到选中的id
+         */
+        function getSelections(list,field)
+        {
+            var ids = [];
+            var rows = $('#'+list).datagrid('getSelections');
+            for(var i=0;i<rows.length;i++){
+                ids.push(rows[i][field]);
+            }
+            return ids.join(',');
+        }
+    </script>
+{% endblock %}
+

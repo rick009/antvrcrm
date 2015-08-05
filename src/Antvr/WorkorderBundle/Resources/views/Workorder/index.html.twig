@@ -68,6 +68,9 @@
                     <i class="fa fa-save"></i> 保存
                 </button>
                 {% if workorder.id is defined %}
+                    <a id="cancel" href="{{ path('antvr_workorder_list') }}" class="pure-button">
+                        <i class="fa fa-backward"></i> 返回
+                    </a>
                     <input type="hidden" id="id" name="id" value="{{ workorder.id }}">
                 {% endif %}
             </div>
@@ -87,14 +90,14 @@
                     return false;
                 }
             });
-            //getTypeLevel2();
-            //getTypeLevel3();
+            getTypeLevel2('{{ workorder.typeLevel2|default('') }}');
+            getTypeLevel3('{{ workorder.typeLevel3|default('') }}');
 
             $('#type_level1').on('change', getTypeLevel2);
-            function getTypeLevel2() {
+            function getTypeLevel2(selectedValue) {
                 var type_level1 = $('#type_level1').val();
-                $('#type_level2').length = 1;
-                $('#type_level3').length = 1;
+                $("#type_level2").find("option[value!='']").remove();
+                $('#type_level3').find("option[value!='']").remove();
                 if (!type_level1) {
                     return false;
                 }
@@ -102,19 +105,24 @@
                     url: "{{ path('antvr_workorder_get_type_level2') }}?typelevel1="+type_level1,
                     dataType: 'json',
                     cache: false,
+                    async: false,
                     success: function (response) {
                         $.each(response, function(index, value) {
-                            $('<option value="'+index+'">'+value.name+'</option>').appendTo($('#type_level2'));
+                            if (index == selectedValue) {
+                                $('<option value="'+index+'" selected>'+value.name+'</option>').appendTo($('#type_level2'));
+                            } else {
+                                $('<option value="'+index+'">'+value.name+'</option>').appendTo($('#type_level2'));
+                            }
                         });
                     }
                 });
             }
 
             $('#type_level2').on('change', getTypeLevel3);
-            function getTypeLevel3() {
+            function getTypeLevel3(selectedValue) {
                 var type_level1 = $('#type_level1').val();
                 var type_level2 = $('#type_level2').val();
-                $('#type_level3').length = 1;
+                $('#type_level3').find("option[value!='']").remove();
                 if (!type_level2) {
                     return false;
                 }
@@ -123,10 +131,15 @@
                     dataType: 'json',
                     data: {typelevel1: type_level1, typelevel2: type_level2},
                     cache: false,
+                    async: false,
                     success: function (response) {
                         if (response) {
                             $.each(response, function(index, value) {
-                                $('<option value="'+index+'">'+value.name+'</option>').appendTo($('#type_level3'));
+                                if (index == selectedValue) {
+                                    $('<option value="'+index+'" selected>'+value.name+'</option>').appendTo($('#type_level3'));
+                                } else {
+                                    $('<option value="'+index+'">'+value.name+'</option>').appendTo($('#type_level3'));
+                                }
                             });
                         }
                     }

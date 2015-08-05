@@ -29,28 +29,28 @@ Antvr\WorkorderBundle\Entity\Workorder:
             options:
                 comment: 客户联系电话
         problemSource:
-            type: boolean
+            type: smallint
             column: problem_source
             options:
                 comment: 问题来源(1电话/2邮件/3QQ/4微博/5微信)
                 unsigned: true
                 default: 0
         typeLevel1:
-            type: boolean
+            type: smallint
             column: type_level1
             options:
                 comment: 咨询类别1
                 unsigned: true
                 default: 0
         typeLevel2:
-            type: boolean
+            type: smallint
             column: type_level2
             options:
                 comment: 咨询类别2
                 unsigned: true
                 default: 0
         typeLevel3:
-            type: boolean
+            type: smallint
             column: type_level3
             options:
                 comment: 咨询类别3

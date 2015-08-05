@@ -10,7 +10,6 @@ namespace Icsoc\CoreBundle\Export;
 
 use Icsoc\CoreBundle\Export\DataType\DataTypeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\VarDumper\VarDumper;
 
 class CsvExport implements ExportInterface
 {

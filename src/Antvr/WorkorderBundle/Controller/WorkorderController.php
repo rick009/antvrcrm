@@ -7,7 +7,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Icsoc\CoreBundle\Export\DataType\ArrayType;
-use Symfony\Component\VarDumper\VarDumper;
 
 class WorkorderController extends Controller
 {
@@ -166,7 +165,7 @@ class WorkorderController extends Controller
             ),
         ),
         6 => array(
-            'name' => '售后服务',
+            'name' => '退货',
             'children' => array(
                 1 => array(
                     'name' => '退货类'
@@ -180,6 +179,18 @@ class WorkorderController extends Controller
             ),
         ),
         7 => array(
+            'name' => '换货',
+            'children' => array(),
+        ),
+        8 => array(
+            'name' => '维修',
+            'children' => array(),
+        ),
+        9 => array(
+            'name' => '开具发票',
+            'children' => array(),
+        ),
+        10 => array(
             'name' => '建议',
             'children' => array(
                 1 => array(
@@ -192,6 +203,10 @@ class WorkorderController extends Controller
                     'name' => '技术类'
                 ),
             ),
+        ),
+        11 => array(
+            'name' => '其它',
+            'children' => array(),
         ),
     );
 
